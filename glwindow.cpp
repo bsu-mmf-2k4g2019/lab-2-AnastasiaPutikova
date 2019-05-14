@@ -21,14 +21,6 @@ static const char *vertexShaderSource_container =
     "    TexCoord = aTex;\n"
     "}\n\0";
 
-static const char *vertexShaderSource_triangle =
-    "#version 330 core\n"
-    "layout (location = 0) in vec3 aPos;\n"
-    "void main()\n"
-    "{\n"
-    "    gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-    "}\n\0";
-
 static const char *vertexShaderSource_doublepyramide =
     "#version 330 core\n"
     "layout (location = 0) in vec3 aPos;\n"
@@ -64,15 +56,6 @@ static const char *fragmentShaderSource_doublepyramide =
     "void main()\n"
     "{\n"
     "    FragColor = texture(picture,TexCoord);\n"
-    "}\n\0";
-
-static const char *fragmentShaderSource_triangle =
-    "#version 330 core\n"
-    "out vec4 FragColor;\n"
-    "uniform vec4 color;\n"
-    "void main()\n"
-    "{\n"
-    "    FragColor = color;\n"
     "}\n\0";
 
 static QVector3D cubePositions[] = {
@@ -163,11 +146,7 @@ void GLWidget::initializeGL()
        -0.5f, -0.5f,-0.5f,   1.0f, 0.0f, 1.0f,   0.0f, 0.0f,   // bottom left
        -0.5f,  0.5f,-0.5f,   1.0f, 0.5f, 0.0f,   0.0f, 1.0f,   // top left
     };
-    GLfloat vertices_triangle[] = {
-        0.9f,  0.9f, 0.0f,
-        0.7f,  0.9f, 0.0f,
-        0.8f,  0.7f, 0.0f
-    };
+
     GLuint indices_container[] = {  // note that we start from 0!
         0, 1, 2,
         0, 2, 3,
@@ -187,9 +166,7 @@ void GLWidget::initializeGL()
         20, 21, 22,
         20, 22, 23,
     };
-    GLuint indices_triangle[] = {
-        0, 1, 2
-    };
+
     GLfloat vertices_doublepyramide[]{
 
         0.0f, -1.0f, 0.0f,
@@ -256,12 +233,10 @@ void GLWidget::initializeGL()
 
     // Fill data for the doublepiramide
     glGenBuffers(1, &VBO);
-    glGenBuffers(1, &EBO);
 
     glBindVertexArray(m_vao_doublepyramide_id);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices_doublepyramide), vertices_doublepyramide, GL_STATIC_DRAW);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
     // Configure how OpenGL will interpret the VBO data
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)nullptr);
     glEnableVertexAttribArray(0);
@@ -290,10 +265,6 @@ void GLWidget::initializeGL()
     m_prog_container.addShaderFromSourceCode(QOpenGLShader::Vertex, vertexShaderSource_container);
     m_prog_container.addShaderFromSourceCode(QOpenGLShader::Fragment, fragmentShaderSource_container);
     m_prog_container.link();
-
-    m_prog_triangle.addShaderFromSourceCode(QOpenGLShader::Vertex, vertexShaderSource_triangle);
-    m_prog_triangle.addShaderFromSourceCode(QOpenGLShader::Fragment, fragmentShaderSource_triangle);
-    m_prog_triangle.link();
 
     m_prog_doublepyramid.addShaderFromSourceCode(QOpenGLShader::Vertex, vertexShaderSource_doublepyramide);
     m_prog_doublepyramid.addShaderFromSourceCode(QOpenGLShader::Fragment, fragmentShaderSource_doublepyramide);
